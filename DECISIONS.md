@@ -13,6 +13,18 @@ real Tesseract the pre-registration names, not a substitute
 engine. scripts/setup_tesseract.sh reproduces the install. The
 version string is recorded in results/run_manifest.json.
 
+## D3: the credential-helper import is optional at module load
+
+After the results commit, CI failed on both Python versions:
+arm_b.py imported the connector's dynamic-credentials helper at
+module load, and that helper exists only on the machine hosting
+the connected route, so the test module could not import on a
+clean runner. The import is now guarded; the helper is required
+only when a call is actually made, and parsing and scoring
+import anywhere. No measured behavior changed: the run path on
+the machine of record is identical, and this fix landed after
+every run record was written.
+
 ## D2: Arm B calls carry a hard deadline in the client
 
 During the full run, one document's Gemini call sat in flight

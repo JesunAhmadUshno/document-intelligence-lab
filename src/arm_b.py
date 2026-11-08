@@ -11,11 +11,17 @@ import threading
 import time
 import urllib.request
 
-sys.path.insert(0, "/opt/muse/skills/custom-connector-setup/bin")
-from dynamic_credentials import (  # noqa: E402
-    add_surrogate_to_request,
-    read_json_response,
-)
+try:
+    sys.path.insert(0, "/opt/muse/skills/custom-connector-setup/bin")
+    from dynamic_credentials import (  # noqa: E402
+        add_surrogate_to_request,
+        read_json_response,
+    )
+except ImportError:  # the connector helper exists only on the
+    # machine that hosts the connected route; parsing must still
+    # import cleanly elsewhere (for example in CI).
+    add_surrogate_to_request = None
+    read_json_response = None
 
 MODEL = "gemini-3-flash-preview"
 API_URL = ("https://generativelanguage.googleapis.com/v1beta/models/"
@@ -64,6 +70,10 @@ def parse_response_text(text):
 
 
 def _call_once(image_bytes):
+    if add_surrogate_to_request is None:
+        raise RuntimeError(
+            "the connector credential helper is not available on "
+            "this machine, so the Gemini route cannot be called")
     body = json.dumps({
         "contents": [{"parts": [
             {"inline_data": {
