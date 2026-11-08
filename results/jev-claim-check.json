@@ -1,0 +1,1 @@
+{"http_status": 200, "response": {"model": "jev-1.13.0", "answers": {"supported": {"type": "noul", "noul": 0.47}}, "usage": {"input_tokens": 1102, "output_tokens": 20}}}

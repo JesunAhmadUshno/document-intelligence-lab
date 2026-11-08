@@ -7,6 +7,7 @@ to generativelanguage.googleapis.com."""
 import base64
 import json
 import sys
+import threading
 import time
 import urllib.request
 
@@ -62,7 +63,7 @@ def parse_response_text(text):
     return pairs
 
 
-def _call(image_bytes):
+def _call_once(image_bytes):
     body = json.dumps({
         "contents": [{"parts": [
             {"inline_data": {
@@ -80,6 +81,29 @@ def _call(image_bytes):
         allowed_hosts=["generativelanguage.googleapis.com"])
     with urllib.request.urlopen(request, timeout=180) as response:
         return read_json_response(response)
+
+
+def _call(image_bytes, deadline=180):
+    """One call attempt with a hard overall deadline. A urllib
+    socket timeout does not bound a slow-drip response, so the
+    attempt runs on a daemon thread; exceeding the deadline is a
+    timeout failure, exactly as the protocol treats it."""
+    box = {}
+
+    def work():
+        try:
+            box["data"] = _call_once(image_bytes)
+        except Exception as exc:  # ferried back to the caller
+            box["error"] = exc
+
+    thread = threading.Thread(target=work, daemon=True)
+    thread.start()
+    thread.join(deadline)
+    if thread.is_alive():
+        raise TimeoutError("call exceeded %d s deadline" % deadline)
+    if "error" in box:
+        raise box["error"]
+    return box["data"]
 
 
 def run_document(image):

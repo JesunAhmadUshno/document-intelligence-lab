@@ -13,6 +13,20 @@ real Tesseract the pre-registration names, not a substitute
 engine. scripts/setup_tesseract.sh reproduces the install. The
 version string is recorded in results/run_manifest.json.
 
+## D2: Arm B calls carry a hard deadline in the client
+
+During the full run, one document's Gemini call sat in flight
+far beyond the intended 180-second timeout: a urllib socket
+timeout does not bound a slow-drip response. The client now runs
+each attempt on a daemon thread with a hard 180-second join
+deadline; exceeding it raises a timeout, which the frozen failure
+rule already covers (one retry, then the document is failed and
+counted). This is a harness correction, not a protocol change:
+the pre-registration freezes the failure semantics, and the
+client now actually enforces them. The stuck attempt produced no
+record and no number; the document was re-run under the fixed
+client.
+
 ## Amendment A1 to PREREGISTRATION.md (before any measured run)
 
 R2's value search, as originally written, continues past an
