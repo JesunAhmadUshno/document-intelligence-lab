@@ -1,0 +1,9 @@
+{
+  "started_unix": 1794141119.1966188,
+  "documents": [
+    "82092117"
+  ],
+  "arm_b_model": "gemini-3-flash-preview",
+  "tesseract_version": "tesseract 5.3.4",
+  "finished_unix": 1794141124.9344528
+}

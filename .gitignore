@@ -1,0 +1,7 @@
+# The FUNSD dataset is never committed (see PREREGISTRATION.md).
+data/
+# User-space tool installs (Tesseract) are rebuilt by scripts.
+.tools/
+.venv/
+__pycache__/
+*.pyc
