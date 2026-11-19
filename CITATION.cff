@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "document-intelligence-lab: classical OCR extraction versus a vision-LLM route on FUNSD forms, a pre-registered study"
+authors:
+  - family-names: Ushno
+    given-names: Jesun Ahmad
+repository-code: "https://github.com/JesunAhmadUshno/document-intelligence-lab"
+license: Apache-2.0
+date-released: 2026-11-08
